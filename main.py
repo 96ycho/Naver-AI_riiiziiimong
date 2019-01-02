@@ -22,6 +22,16 @@ from keras import backend as K
 from data_loader import train_data_loader
 
 
+import keras.backend as K
+
+def get_categorical_accuracy_keras(y_true, y_pred):
+    return K.mean(K.equal(K.argmax(y_true, axis=1), K.argmax(y_pred, axis=1)))
+
+import numpy as np
+
+def get_categorical_accuracy(y_true, y_pred):
+    return (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).mean()
+
 def bind_model(model):
     def save(dir_name):
         os.makedirs(dir_name, exist_ok=True)
@@ -177,9 +187,10 @@ if __name__ == '__main__':
 
         """ Initiate RMSprop optimizer """
         opt = keras.optimizers.rmsprop(lr=0.00045, decay=1e-6)
-        model.compile(loss='categorical_crossentropy',
-                      optimizer=opt,
-                      metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=[get_categorical_accuracy_keras])
+        # model.compile(loss='categorical_crossentropy',
+        #               optimizer=opt,
+        #               metrics=['accuracy'])
 
         """ Load data """
         print('dataset path', DATASET_PATH)
