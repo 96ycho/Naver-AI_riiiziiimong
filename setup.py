@@ -7,5 +7,6 @@ setup(
     version='1.0',
     description='nsml vision hackathon',
     install_requires=[
+        'keras-resnet'
     ]
 )

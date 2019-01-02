@@ -20,6 +20,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import ReduceLROnPlateau
 from keras import backend as K
 from data_loader import train_data_loader
+import keras_resnet.models
 
 
 import keras.backend as K
@@ -146,6 +147,12 @@ if __name__ == '__main__':
     args.add_argument('--pause', type=int, default=0, help='model 을 load 할때 1로 설정됩니다.')
     config = args.parse_args()
 
+    ## edit start
+    shape, classes = (32, 32, 3), 10
+    x = keras.layers.Input(shape)
+    model_1 = keras_resnet.models.ResNet50(x, classes=classes)
+    model_1.compile("adam", "categorical_crossentropy", ["accuracy"])
+    ## end
     # training parameters
     nb_epoch = config.epochs
     batch_size = config.batch_size
