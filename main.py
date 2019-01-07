@@ -19,19 +19,19 @@ from keras.layers import Dense, Dropout, Flatten, Activation
 from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import ReduceLROnPlateau
 from keras import backend as K
-from data_loader import train_data_loader
+from data_loader import train_data_loader, test_data_loader
 import keras_resnet.models
 
 
-import keras.backend as K
-
-def get_categorical_accuracy_keras(y_true, y_pred):
-    return K.mean(K.equal(K.argmax(y_true, axis=1), K.argmax(y_pred, axis=1)))
-
-import numpy as np
-
-def get_categorical_accuracy(y_true, y_pred):
-    return (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).mean()
+# import keras.backend as K
+#
+# def get_categorical_accuracy_keras(y_true, y_pred):
+#     return K.mean(K.equal(K.argmax(y_true, axis=1), K.argmax(y_pred, axis=1)))
+#
+# import numpy as np
+#
+# def get_categorical_accuracy(y_true, y_pred):
+#     return (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).mean()
 
 def bind_model(model):
     def save(dir_name):
@@ -189,15 +189,19 @@ if __name__ == '__main__':
         nsml.paused(scope=locals())
 
     bTrainmode = False
+
+    q_p, r_p = test_data_loader(DATASET_PATH)
+    print(q_p)
+
     if config.mode == 'train':
         bTrainmode = True
 
         """ Initiate RMSprop optimizer """
         opt = keras.optimizers.rmsprop(lr=0.00045, decay=1e-6)
-        model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=[get_categorical_accuracy_keras])
-        # model.compile(loss='categorical_crossentropy',
-        #               optimizer=opt,
-        #               metrics=['accuracy'])
+        # model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=[get_categorical_accuracy_keras])
+        model.compile(loss='categorical_crossentropy',
+                      optimizer=opt,
+                      metrics=['accuracy'])
 
         """ Load data """
         print('dataset path', DATASET_PATH)

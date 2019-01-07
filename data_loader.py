@@ -6,7 +6,7 @@ from __future__ import print_function
 import os
 import cv2
 import pickle
-
+import nsml
 
 def train_data_loader(data_path, img_size, output_path):
     label_list = []
@@ -49,5 +49,6 @@ def test_data_loader(data_path):
 
 if __name__ == '__main__':
     query, refer = test_data_loader('./')
+    # query, refer = test_data_loader(nsml.DATASET_PATH)
     print(query)
     print(refer)
