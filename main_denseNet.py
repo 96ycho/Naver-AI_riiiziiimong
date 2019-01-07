@@ -23,7 +23,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import ReduceLROnPlateau
 from keras import backend as K
-from data_loader import train_data_loader
+from data_loader import *
 #import keras_densenet.models
 
 
@@ -387,3 +387,7 @@ if __name__ == '__main__':
             train_loss, train_acc = res.history['loss'][0], res.history['get_categorical_accuracy_keras'][0]
             nsml.report(summary=True, epoch=epoch, epoch_total=nb_epoch, loss=train_loss, acc=train_acc)
             nsml.save(epoch)
+    test_data_path = DATASET_PATH + '/test/test_data'
+    qur, ref = test_data_loader(test_data_path)
+    print(qur)
+    print(ref)
