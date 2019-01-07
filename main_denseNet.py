@@ -23,8 +23,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import ReduceLROnPlateau
 from keras import backend as K
-from data_loader import train_data_loader
-#import keras_densenet.models
+from data_loader import *
 
 
 import keras.backend as K
@@ -318,7 +317,8 @@ if __name__ == '__main__':
 
     ## end
     # training parameters
-    nb_epoch = config.epochs
+    #nb_epoch = config.epochs
+    nb_epoch = 1000
     batch_size = config.batch_size
     num_classes = 1000
     input_shape = (224, 224, 3)  # input image shape
