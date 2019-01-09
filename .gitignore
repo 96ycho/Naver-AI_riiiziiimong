@@ -118,7 +118,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
+# OS generated
+.DS_Store
+# Intellij
+.idea
 ### Python Patch ###
 .venv/
 

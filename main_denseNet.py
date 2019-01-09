@@ -24,6 +24,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import ReduceLROnPlateau
 from keras import backend as K
 from data_loader import *
+#import keras_densenet.models
 
 
 import keras.backend as K
@@ -317,8 +318,7 @@ if __name__ == '__main__':
 
     ## end
     # training parameters
-    #nb_epoch = config.epochs
-    nb_epoch = 1000
+    nb_epoch = config.epochs
     batch_size = config.batch_size
     num_classes = 1000
     input_shape = (224, 224, 3)  # input image shape
@@ -387,3 +387,7 @@ if __name__ == '__main__':
             train_loss, train_acc = res.history['loss'][0], res.history['get_categorical_accuracy_keras'][0]
             nsml.report(summary=True, epoch=epoch, epoch_total=nb_epoch, loss=train_loss, acc=train_acc)
             nsml.save(epoch)
+    test_data_path = DATASET_PATH + '/test/test_data'
+    qur, ref = test_data_loader(test_data_path)
+    print(qur)
+    print(ref)
