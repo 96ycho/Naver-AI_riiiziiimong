@@ -378,13 +378,13 @@ if __name__ == '__main__':
 
     # training parameters
     nb_epoch = config.epochs
-    nb_epoch = 500
+    nb_epoch = 5
     batch_size = config.batch_size
     num_classes = 1000
     input_shape = (224, 224, 3)  # input image shape
 
     # eunji
-    version = 2
+    version = 1
     n=3
 
     if version == 1:
@@ -418,7 +418,7 @@ if __name__ == '__main__':
     model.summary()
     """
 
-    model = resnet_v2(input_shape=input_shape, depth=depth, num_classes=num_classes)
+    model = resnet_v1(input_shape=input_shape, depth=depth, num_classes=num_classes)
     model.summary()
 
     bind_model(model)
@@ -442,6 +442,9 @@ if __name__ == '__main__':
         output_path = ['./img_list.pkl', './label_list.pkl']
         train_dataset_path = DATASET_PATH + '/train/train_data'
 
+        nsml.IS_ON_NSML=False
+        train_dataset_path = '../../Data_example_ph1'
+
         if nsml.IS_ON_NSML:
             # Caching file
             nsml.cache(train_data_loader, data_path=train_dataset_path, img_size=input_shape[:2],
@@ -455,8 +458,20 @@ if __name__ == '__main__':
         with open(output_path[1], 'rb') as label_f:
             label_list = pickle.load(label_f)
 
+        # add grayscale        
+        gray = []
+        for j in range(0, len(img_list)):
+            img_gray = cv2.cvtColor(np.array(img_list[j]), cv2.COLOR_BGR2GRAY)
+            img_gray = np.stack((img_gray, img_gray, img_gray), axis = -1)
+            gray.append(img_gray)
+
+        gray_train = np.asarray(gray)
         x_train = np.asarray(img_list)
+        x_train = np.concatenate((x_train,gray_train),axis = 0)
+
         labels = np.asarray(label_list)
+        labels = np.concatenate((labels, labels), axis =0)
+
         y_train = keras.utils.to_categorical(labels, num_classes=num_classes)
         x_train = x_train.astype('float32')
         x_train /= 255
@@ -481,7 +496,7 @@ if __name__ == '__main__':
             nsml.save(epoch)
 
     # eunji
-    """
+
     config.mode = 'test'
     if config.mode  == 'test':
         queries, db = test_data_loader('../../Data_example_test')
@@ -540,4 +555,3 @@ if __name__ == '__main__':
 
             retrieval_results[query] = ranked_list
         print('done')
-    """
