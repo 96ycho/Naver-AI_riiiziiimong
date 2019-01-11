@@ -365,7 +365,12 @@ if __name__ == '__main__':
         with open(output_path[1], 'rb') as label_f:
             label_list = pickle.load(label_f)
 
+        gray_ch_img_list = np.asarray(cv2.cvtColor(np.asarray(img_list), cv2.COLOR_BGR2COLOR_BGR2GRAY))
+        gray_img_list = np.concatenate((gray_ch_img_list, gray_ch_img_list), axis=1)
+        gray_img_list = np.concatenate((gray_img_list, gray_ch_img_list), axis=1)
+
         x_train = np.asarray(img_list)
+        x_train = np.concatenate(x_train, gray_img_list)
         labels = np.asarray(label_list)
         y_train = keras.utils.to_categorical(labels, num_classes=num_classes)
         x_train = x_train.astype('float32')
