@@ -458,7 +458,7 @@ if __name__ == '__main__':
         with open(output_path[1], 'rb') as label_f:
             label_list = pickle.load(label_f)
 
-        # add grayscale        
+        # add grayscale
         gray = []
         for j in range(0, len(img_list)):
             img_gray = cv2.cvtColor(np.array(img_list[j]), cv2.COLOR_BGR2GRAY)
