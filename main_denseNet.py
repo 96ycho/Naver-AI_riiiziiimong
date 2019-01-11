@@ -20,6 +20,8 @@ from keras.layers import Input, merge,concatenate, ZeroPadding2D, Dense, Dropout
 from keras.layers.pooling import AveragePooling2D, GlobalAveragePooling2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 
+from keras.preprocessing.image import ImageDataGenerator
+
 from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import ReduceLROnPlateau
 from keras import backend as K
@@ -318,7 +320,7 @@ if __name__ == '__main__':
 
     ## end
     # training parameters
-    nb_epoch = config.epochs
+    nb_epoch = 700
     batch_size = config.batch_size
     num_classes = 1000
     input_shape = (224, 224, 3)  # input image shape
@@ -370,11 +372,45 @@ if __name__ == '__main__':
         x_train /= 255
         print(len(labels), 'train samples')
 
+
+        flipdatagen = ImageDataGenerator(horizontal_flip = True, vertical_flip = True)
+        xFlip_train = x_train
+        flipdatagen.fit(xFlip_train)
+
+
+        rotdatagen = ImageDataGenerator(rotation_range=90)
+        xRotate_train = x_train
+        rotdatagen.fit(xRotate_train)
+
+
+        augdatagen = ImageDataGenerator(
+                    rotation_range=40,
+                    width_shift_range=0.2,
+                    height_shift_range=0.2,
+                    shear_range=0.2,
+                    zoom_range=0.2,
+                    horizontal_flip=True,
+                    fill_mode='nearest')
+        xAug_train = x_train
+        yAug_train = y_train
+        augdatagen.fit(xAug_train)
+
+        x_train = np.concatenate((x_train,xAug_train),axis = 0)
+        x_train = np.concatenate((x_train, xRotate_train),axis = 0)
+        x_train = np.concatenate((x_train, xFlip_train),axis=0)
+
+        y_train = np.concatenate((y_train,yAug_train),axis = 0)
+        y_train = np.concatenate((y_train,yAug_train),axis = 0)
+        y_train = np.concatenate((y_train,yAug_train),axis = 0)
+
+        print('y_train : ', len(y_train))
         """ Callback """
         monitor = 'get_categorical_accuracy_keras'
         reduce_lr = ReduceLROnPlateau(monitor=monitor, patience=3)
 
         """ Training loop """
+
+
         for epoch in range(nb_epoch):
             res = model.fit(x_train, y_train,
                             batch_size=batch_size,
@@ -387,7 +423,3 @@ if __name__ == '__main__':
             train_loss, train_acc = res.history['loss'][0], res.history['get_categorical_accuracy_keras'][0]
             nsml.report(summary=True, epoch=epoch, epoch_total=nb_epoch, loss=train_loss, acc=train_acc)
             nsml.save(epoch)
-    test_data_path = DATASET_PATH + '/test/test_data'
-    qur, ref = test_data_loader(test_data_path)
-    print(qur)
-    print(ref)
