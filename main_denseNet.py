@@ -374,26 +374,23 @@ if __name__ == '__main__':
 
         gray_train = np.asarray(gray)
         x_train = np.asarray(img_list)
-        x_train = np.concatenate((x_train,gray_train),axis = 0)
+        # x_train = np.concatenate((x_train,gray_train),axis = 0)
 
         labels = np.asarray(label_list)
-        labels = np.concatenate((labels, labels), axis =0)
-        
+        # labels = np.concatenate((labels, labels), axis =0)
+
         y_train = keras.utils.to_categorical(labels, num_classes=num_classes)
         x_train = x_train.astype('float32')
         x_train /= 255
         print(len(labels), 'train samples')
 
-
         flipdatagen = ImageDataGenerator(horizontal_flip = True, vertical_flip = True)
         xFlip_train = x_train
         flipdatagen.fit(xFlip_train)
 
-
         rotdatagen = ImageDataGenerator(rotation_range=90)
         xRotate_train = x_train
         rotdatagen.fit(xRotate_train)
-
 
         augdatagen = ImageDataGenerator(
                     rotation_range=40,
@@ -408,10 +405,8 @@ if __name__ == '__main__':
         augdatagen.fit(xAug_train)
 
         x_train = np.concatenate((x_train,xAug_train),axis = 0)
-        x_train = np.concatenate((x_train, xRotate_train),axis = 0)
-        x_train = np.concatenate((x_train, xFlip_train),axis=0)
+        x_train = np.concatenate((x_train, gray_train), axis=0)
 
-        y_train = np.concatenate((y_train,yAug_train),axis = 0)
         y_train = np.concatenate((y_train,yAug_train),axis = 0)
         y_train = np.concatenate((y_train,yAug_train),axis = 0)
 
