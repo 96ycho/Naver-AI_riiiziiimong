@@ -365,28 +365,32 @@ if __name__ == '__main__':
         with open(output_path[1], 'rb') as label_f:
             label_list = pickle.load(label_f)
 
-        gray_ch_img_list = np.asarray(cv2.cvtColor(np.asarray(img_list), cv2.COLOR_BGR2COLOR_BGR2GRAY))
-        gray_img_list = np.concatenate((gray_ch_img_list, gray_ch_img_list), axis=1)
-        gray_img_list = np.concatenate((gray_img_list, gray_ch_img_list), axis=1)
+        # add grayscale
+        gray = []
+        for j in range(0, len(img_list)):
+            img_gray = cv2.cvtColor(np.array(img_list[j]), cv2.COLOR_BGR2GRAY)
+            img_gray = np.stack((img_gray, img_gray, img_gray), axis = -1)
+            gray.append(img_gray)
 
+        gray_train = np.asarray(gray)
         x_train = np.asarray(img_list)
-        x_train = np.concatenate(x_train, gray_img_list)
+        # x_train = np.concatenate((x_train,gray_train),axis = 0)
+
         labels = np.asarray(label_list)
+        # labels = np.concatenate((labels, labels), axis =0)
+
         y_train = keras.utils.to_categorical(labels, num_classes=num_classes)
         x_train = x_train.astype('float32')
         x_train /= 255
         print(len(labels), 'train samples')
 
-
         flipdatagen = ImageDataGenerator(horizontal_flip = True, vertical_flip = True)
         xFlip_train = x_train
         flipdatagen.fit(xFlip_train)
 
-
         rotdatagen = ImageDataGenerator(rotation_range=90)
         xRotate_train = x_train
         rotdatagen.fit(xRotate_train)
-
 
         augdatagen = ImageDataGenerator(
                     rotation_range=40,
@@ -401,10 +405,8 @@ if __name__ == '__main__':
         augdatagen.fit(xAug_train)
 
         x_train = np.concatenate((x_train,xAug_train),axis = 0)
-        x_train = np.concatenate((x_train, xRotate_train),axis = 0)
-        x_train = np.concatenate((x_train, xFlip_train),axis=0)
+        x_train = np.concatenate((x_train, gray_train), axis=0)
 
-        y_train = np.concatenate((y_train,yAug_train),axis = 0)
         y_train = np.concatenate((y_train,yAug_train),axis = 0)
         y_train = np.concatenate((y_train,yAug_train),axis = 0)
 
